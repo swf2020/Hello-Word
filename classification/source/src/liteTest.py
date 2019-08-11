@@ -65,12 +65,14 @@ def splictExcelFile(num):
         for col in range(ncol):
             booksheet.write(0, col, read.columns.values[ncol*i + col])
 
-        #复制每一列
-        matrix = [[0] * (len(ts)-1)] * len(ts)
+        #删除有空格的行
+        flag = 0
         for row in range(1, len(ts)):
             for col in range(0, ncol):
-                if (np.isnan(ts[row][col])):
-                    print("")
+                if (np.isnan(ts[row - flag][col])):
+                    ts = np.delete(ts, row - flag, axis = 0)
+                    flag += 1
+                    break
 
         # 写每一列
         for row in range(1, len(ts)):
@@ -110,5 +112,3 @@ if __name__ == '__main__':
     writeExcelFile(fileName, liKey, liContent)
     splictExcelFile(4)
     #os.remove(fileName)
-#我修改了代码
-#我又修改了代码

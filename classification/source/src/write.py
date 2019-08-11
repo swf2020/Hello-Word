@@ -1,29 +1,38 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jul 15 10:22:59 2019
-
-@author: sunwf1114
-"""
-import xlwt
+import os
 import pandas as pd
+import xlwt
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QFileDialog
+import sys
+import  os
 
-def writeExcelFile(num):
-    read = pd.read_csv('./Classification_File.xls')
-    ncol = int(read.columns.size/num)#每个文件的列数
-    for i in range(num):
-        ts = read.iloc[:, ncol*i : ncol*(i+1)].values  # 读取所有列
-        workbook = xlwt.Workbook(encoding='utf-8') # 因为输入都是Unicode字符，这里使用utf-8，免得来回转换
-        booksheet = workbook.add_sheet('Sheet_1', cell_overwrite_ok=True)
-        #写第一行
-        for col in range(ncol):
-            booksheet.write(0, col, read.columns.values[ncol*i + col])
-        # 写每一列
-        for row in range(1, len(ts)):
-            for col in range(0, len(ts[row])):
-                booksheet.write(row, col, ts[row][col])
-        workbook.save(str(read.columns.values[ncol*i + ncol - 1])+ "#_file.xls")# 保存文件
+# 加载窗口
+class MyWindow(QtWidgets.QWidget):
+    def __init__(self):
+        super(MyWindow, self).__init__()
 
+    def msg(self):
+        fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", "./",
+                                                          "All Files (*);;Excel Files (*.xls)")  # 设置文件扩展名过滤,注意用双分号间隔
+        return fileName1
 
-if __name__ == "__main__":
-    writeExcelFile(4) #数字表示创造文件的数量
+# 将文件读取出来放一个列表里面
+def merge(filename):
+    pwd = os.path.dirname(filename)  # 获取文件目录
+    file_list = [] # 新建列表，存放文件名
+    dfs = [] # 新建列表存放每个文件数据(依次读取多个相同结构的Excel文件并创建DataFrame)
+    for root,dirs,files in os.walk(pwd): # 第一个为起始路径，第二个为起始路径下的文件夹，第三个是起始路径下的文件。
+      for file in files:
+        file_path = os.path.join(root, file)
+        file_list.append(file_path) # 使用os.path.join(dirpath, name)得到全路径
+        df = pd.read_excel(file_path) # 将excel转换成DataFrame
+        dfs.append(df)
 
+    df = pd.concat(dfs) # 将多个DataFrame合并为一个
+    df.to_excel(os.path.dirname(filename) + '/result.xls', index=False) # 写入excel文件，不包含索引数据
+
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    myshow = MyWindow()
+    filename = myshow.msg()  # 加载指定的文件
+    merge(filename)

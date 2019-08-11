@@ -19,7 +19,6 @@ class MyWindow(QtWidgets.QWidget):
                                                           "All Files (*);;Excel Files (*.xls)")  # 设置文件扩展名过滤,注意用双分号间隔
         return fileName1
 
-
 def load_keyname():  #返回一个字典
     if os.path.exists('data_name.xls') != True:
         workbook = xlwt.Workbook(encoding='utf-8')
@@ -64,7 +63,6 @@ def splictExcelFile(num):
         #写第一行
         for col in range(ncol):
             booksheet.write(0, col, read.columns.values[ncol*i + col])
-
         #删除有空格的行
         flag = 0
         for row in range(1, len(ts)):
@@ -73,12 +71,10 @@ def splictExcelFile(num):
                     ts = np.delete(ts, row - flag, axis = 0)
                     flag += 1
                     break
-
         # 写每一列
         for row in range(1, len(ts)):
             for col in range(0, len(ts[row])):
                 booksheet.write(row, col, ts[row][col])
-
         workbook.save(str(read.columns.values[ncol*i + ncol - 1])+ "#_file.xls")# 保存文件
 
 

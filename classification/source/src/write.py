@@ -36,3 +36,5 @@ if __name__ == '__main__':
     myshow = MyWindow()
     filename = myshow.msg()  # 加载指定的文件
     merge(filename)
+
+#加一个关键字
